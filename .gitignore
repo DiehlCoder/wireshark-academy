@@ -1,0 +1,31 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Virtual Machine & Large Image Files (Do not commit to Git)
+*.vdi
+*.vmdk
+*.vhd
+*.vhdx
+*.iso
+*.ova
+*.ovf
+*.vbox
+*.vbox-prev
+
+# Large Packet Captures / Temporary Dumps
+*.pcap.tmp
+*.pcapng.tmp
+*.cap.tmp
+*.dmp
+
+# Editor & IDE Directories
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary & Log Files
+*.log
+scratch/

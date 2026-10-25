@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Packet Ninja: Interactive Wireshark & Network Security Lab</title>
+  <meta name="description" content="Master Wireshark, the OSI model, TCP/IP, Nmap, Netcat, Snort 3, and attack/defense analysis through an interactive browser lab.">
+
+  <!-- Typography: Google Fonts Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System & Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ====================================================================
+       TOP STICKY NAVBAR
+       ==================================================================== -->
+  <header class="top-navbar">
+    <div class="brand-wrapper" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+      <div class="brand-icon-box">🦈</div>
+      <div class="brand-text">
+        <h1>PACKET NINJA <span class="tag">Academy</span></h1>
+        <div class="subtext">Wireshark, TCP/IP & Network Security Lab</div>
+      </div>
+    </div>
+
+    <!-- Search Bar with Live Overlay -->
+    <div class="nav-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="global-search-input" placeholder="Search lessons, display filters, protocols..." autocomplete="off">
+      <div id="search-results-overlay" class="search-results-overlay"></div>
+    </div>
+
+    <!-- Live XP & Rank Profile Badge -->
+    <div class="xp-profile-badge">
+      <div class="rank-avatar" id="user-rank-avatar">🐟</div>
+      <div class="xp-info">
+        <div class="xp-header-row">
+          <span id="user-rank-name">🐟 Packet Plankton</span>
+          <span id="user-xp-count" style="color: var(--emerald);">0 XP</span>
+        </div>
+        <div class="xp-bar-bg">
+          <div class="xp-bar-fill" id="user-xp-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Lab Action Buttons -->
+    <div class="nav-actions">
+      <button class="btn btn-primary" id="nav-btn-dissector">
+        <span>🦈</span> Dissector Lab
+      </button>
+      <button class="btn btn-secondary" id="nav-btn-handshake">
+        <span>⚡</span> Handshake
+      </button>
+      <button class="btn btn-secondary" id="nav-btn-calc">
+        <span>🔢</span> CIDR Calc
+      </button>
+      <button class="btn btn-secondary" id="nav-btn-snort">
+        <span>🛡️</span> Snort 3
+      </button>
+      <button class="btn btn-secondary" id="nav-btn-cheatsheet">
+        <span>📋</span> Cheat Sheet
+      </button>
+      <button class="btn btn-secondary" id="nav-btn-glossary">
+        <span>📖</span> Glossary
+      </button>
+      <button class="btn btn-emerald" id="nav-btn-exam">
+        <span>🎓</span> Exam
+      </button>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       APPLICATION WORKSPACE (SIDEBAR + MAIN CONTENT VIEWPORT)
+       ==================================================================== -->
+  <div class="app-layout">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <h2>Curriculum Roadmap</h2>
+        <span style="font-size: 0.72rem; color: var(--cyan); font-family: var(--font-mono);">12 MODULES</span>
+      </div>
+
+      <!-- Difficulty Filter Pills -->
+      <div class="filter-pills">
+        <button class="filter-pill active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="beginner">Beginner</button>
+        <button class="filter-pill" data-filter="intermediate">Intermediate</button>
+        <button class="filter-pill" data-filter="advanced">Advanced</button>
+        <button class="filter-pill" data-filter="pro">Pro</button>
+      </div>
+
+      <!-- Module List Container -->
+      <ul class="module-nav-list" id="module-nav-list">
+        <!-- Rendered via js/app.js -->
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Active Module Hero Banner -->
+      <section id="module-hero-container">
+        <!-- Rendered via js/app.js -->
+      </section>
+
+      <!-- Active Module Worksheet Tabs -->
+      <nav class="worksheet-tabs-container" id="worksheet-tabs-bar" aria-label="Worksheet Tabs">
+        <!-- Rendered via js/app.js -->
+      </nav>
+
+      <!-- Active Worksheet Content Viewport -->
+      <div id="worksheet-body-container">
+        <!-- Rendered via js/app.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 1: WIRESHARK PACKET DISSECTOR SIMULATOR
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-dissector">
+    <div class="modal-container" style="max-width: 1200px;">
+      <header class="modal-header">
+        <h3><span>🦈</span> Interactive Wireshark Packet Dissector & Filter Sandbox</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div class="wireshark-simulator">
+          <!-- Display Filter Bar -->
+          <div class="ws-filter-bar">
+            <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan); font-weight: 700;">Filter:</span>
+            <input type="text" id="ws-filter-input" placeholder="e.g. http, tcp, arp, dns, 10.10.10.20, syn..." autocomplete="off">
+            <button class="btn btn-primary btn-sm" id="ws-filter-apply">Apply Filter</button>
+            <button class="btn btn-secondary btn-sm" id="ws-filter-clear">Clear</button>
+          </div>
+
+          <!-- Quick Filter Chips -->
+          <div class="ws-filter-chips">
+            <span style="font-size: 0.72rem; color: var(--text-dim); margin-right: 0.3rem;">Presets:</span>
+            <button class="ws-chip" data-filter="">all packets</button>
+            <button class="ws-chip" data-filter="http">http</button>
+            <button class="ws-chip" data-filter="tcp">tcp</button>
+            <button class="ws-chip" data-filter="syn">tcp.flags.syn == 1</button>
+            <button class="ws-chip" data-filter="dns">dns</button>
+            <button class="ws-chip" data-filter="arp">arp</button>
+            <button class="ws-chip" data-filter="post">POST login</button>
+            <button class="ws-chip" data-filter="10.10.10.20">ip.addr == 10.10.10.20</button>
+          </div>
+
+          <!-- 3-Pane Interface -->
+          <div class="ws-panes">
+            <!-- Pane 1: Packet List -->
+            <div class="ws-pane-list">
+              <table class="ws-packet-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">No.</th>
+                    <th style="width: 100px;">Time</th>
+                    <th style="width: 130px;">Source</th>
+                    <th style="width: 130px;">Destination</th>
+                    <th style="width: 90px;">Protocol</th>
+                    <th style="width: 70px;">Length</th>
+                    <th>Info</th>
+                  </tr>
+                </thead>
+                <tbody id="ws-packet-tbody">
+                  <!-- Rendered via js/app.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pane 2: Packet Details Tree -->
+            <div class="ws-pane-details" id="ws-details-tree">
+              <!-- Rendered via js/app.js -->
+            </div>
+
+            <!-- Pane 3: Hex & ASCII Dump -->
+            <div class="ws-pane-hex" id="ws-hex-dump">
+              <!-- Rendered via js/app.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 2: TCP 3-WAY HANDSHAKE SIMULATOR
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-handshake">
+    <div class="modal-container" style="max-width: 850px;">
+      <header class="modal-header">
+        <h3><span>⚡</span> Interactive TCP 3-Way Handshake & State Animator</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div class="handshake-visualizer">
+          <!-- Network Wire Track -->
+          <div class="hs-lan-track">
+            <!-- Client Node -->
+            <div class="hs-node">
+              <div class="hs-node-icon">💻</div>
+              <strong style="color: #fff; font-size: 0.95rem;">Kali Linux (Client)</strong>
+              <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--cyan);">10.10.10.10:54234</span>
+              <div class="hs-node-state" id="hs-client-state">LISTEN</div>
+            </div>
+
+            <!-- Flying Packet on the wire -->
+            <div class="hs-packet-flyer" id="hs-flyer">SYN (Seq=0)</div>
+
+            <!-- Server Node -->
+            <div class="hs-node">
+              <div class="hs-node-icon">🖥️</div>
+              <strong style="color: #fff; font-size: 0.95rem;">Ubuntu Server</strong>
+              <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--cyan);">10.10.10.20:80</span>
+              <div class="hs-node-state" id="hs-server-state">LISTEN</div>
+            </div>
+          </div>
+
+          <!-- Step Description Box -->
+          <div class="hs-step-info-box">
+            <h4 id="hs-step-label">Step 1: SYN</h4>
+            <p id="hs-desc">Client transmits initial SYN to negotiate sequence numbers.</p>
+          </div>
+
+          <!-- Step Controls -->
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn btn-secondary" id="hs-btn-prev">← Previous Step</button>
+            <button class="btn btn-secondary btn-sm" id="hs-btn-reset">↺ Reset Handshake</button>
+            <button class="btn btn-primary" id="hs-btn-next">Next Step →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 3: CIDR SUBNET CALCULATOR
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-calc">
+    <div class="modal-container" style="max-width: 800px;">
+      <header class="modal-header">
+        <h3><span>🔢</span> CIDR Subnet & IPv4 Address Calculator</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div class="calc-grid">
+          <div class="calc-input-group">
+            <label for="calc-ip">IP Address:</label>
+            <input type="text" id="calc-ip" value="10.10.10.0" placeholder="e.g. 192.168.1.1">
+
+            <label for="calc-prefix" style="margin-top: 0.5rem;">CIDR Prefix (/Mask):</label>
+            <select id="calc-prefix">
+              <option value="8">/8 (255.0.0.0 - 16,777,214 hosts)</option>
+              <option value="16">/16 (255.255.0.0 - 65,534 hosts)</option>
+              <option value="20">/20 (255.255.240.0 - 4,094 hosts)</option>
+              <option value="23">/23 (255.255.254.0 - 510 hosts)</option>
+              <option value="24" selected>/24 (255.255.255.0 - 254 hosts)</option>
+              <option value="25">/25 (255.255.255.128 - 126 hosts)</option>
+              <option value="26">/26 (255.255.255.192 - 62 hosts)</option>
+              <option value="27">/27 (255.255.255.224 - 30 hosts)</option>
+              <option value="28">/28 (255.255.255.240 - 14 hosts)</option>
+              <option value="29">/29 (255.255.255.248 - 6 hosts)</option>
+              <option value="30">/30 (255.255.255.252 - 2 point-to-point hosts)</option>
+              <option value="32">/32 (255.255.255.255 - Single Host)</option>
+            </select>
+
+            <button class="btn btn-primary" id="calc-btn" style="margin-top: 1rem;">Recalculate</button>
+          </div>
+
+          <div>
+            <table class="calc-results-table">
+              <tr><td>Subnet Mask:</td><td id="res-netmask">255.255.255.0</td></tr>
+              <tr><td>Wildcard Mask:</td><td id="res-wildcard">0.0.0.255</td></tr>
+              <tr><td>Network Address:</td><td id="res-network">10.10.10.0/24</td></tr>
+              <tr><td>Broadcast Address:</td><td id="res-broadcast">10.10.10.255</td></tr>
+              <tr><td>Usable Hosts:</td><td id="res-hosts" style="color: var(--emerald); font-weight: 700;">254</td></tr>
+              <tr><td>Usable Host Range:</td><td id="res-range">10.10.10.1 – 10.10.10.254</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 4: SNORT 3 RULE GENERATOR
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-snort">
+    <div class="modal-container" style="max-width: 900px;">
+      <header class="modal-header">
+        <h3><span>🛡️</span> Interactive Snort 3 Rule Builder</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div class="snort-builder-grid">
+          <div class="calc-input-group">
+            <label for="snort-action">Rule Action:</label>
+            <select id="snort-action">
+              <option value="alert" selected>alert (Generate Alert)</option>
+              <option value="drop">drop (Inline IPS Drop Packet)</option>
+              <option value="block">block (Drop & Terminate Session)</option>
+              <option value="pass">pass (Ignore Traffic)</option>
+            </select>
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-proto">Protocol:</label>
+            <select id="snort-proto">
+              <option value="tcp" selected>TCP</option>
+              <option value="udp">UDP</option>
+              <option value="icmp">ICMP</option>
+              <option value="http">HTTP</option>
+            </select>
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-src-ip">Source IP / Net:</label>
+            <input type="text" id="snort-src-ip" value="$EXTERNAL_NET">
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-src-port">Source Port:</label>
+            <input type="text" id="snort-src-port" value="any">
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-dst-ip">Destination IP / Net:</label>
+            <input type="text" id="snort-dst-ip" value="$HOME_NET">
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-dst-port">Destination Port:</label>
+            <input type="text" id="snort-dst-port" value="80">
+          </div>
+          <div class="calc-input-group" style="grid-column: span 2;">
+            <label for="snort-msg">Alert Message (msg):</label>
+            <input type="text" id="snort-msg" value="WEB-ATTACK Potential SQL Injection UNION SELECT">
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-content">Payload String Match (content):</label>
+            <input type="text" id="snort-content" value="UNION SELECT">
+          </div>
+          <div class="calc-input-group">
+            <label for="snort-sid">Signature ID (SID &ge; 1,000,001):</label>
+            <input type="text" id="snort-sid" value="1000001">
+          </div>
+        </div>
+
+        <div class="snort-output-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--purple);">Generated Snort 3 Rule:</span>
+            <button class="btn btn-emerald btn-sm" id="snort-copy-btn">📋 Copy Rule</button>
+          </div>
+          <pre id="snort-rule-output"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 5: MASTER CHEAT SHEET
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-cheatsheet">
+    <div class="modal-container" style="max-width: 1000px;">
+      <header class="modal-header">
+        <h3><span>📋</span> Master Cybersecurity & Wireshark Cheat Sheet</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <h4 style="color: var(--cyan); margin-bottom: 0.75rem;">1. Essential Wireshark Display Filters</h4>
+        <div class="code-box">
+          <code>ip.addr == 10.10.10.20                 # Filter by IP endpoint
+tcp.flags.syn == 1 && tcp.flags.ack == 0  # Initial connection attempts / SYN scans
+tcp.flags.reset == 1                   # Closed port / connection abort (RST)
+tcp.analysis.retransmission            # Packet loss / network degradation
+arp.duplicate-address-detected         # ARP Spoofing / IP address conflict
+http.request.method in {"GET","POST"}  # Web requests
+dns.flags.rcode != 0                   # DNS resolution errors (NXDOMAIN)
+ftp.request.command in {"USER","PASS"} # Plaintext FTP credentials</code>
+        </div>
+
+        <h4 style="color: var(--cyan); margin: 1.5rem 0 0.75rem;">2. BPF (Capture Filter) Quick Reference</h4>
+        <div class="code-box">
+          <code>host 10.10.10.20                       # Inbound & outbound to IP
+src net 10.10.10.0/24                  # Source inside subnet
+port 53 or port 80                     # Filter on port numbers
+not port 22                            # Exclude SSH administrative traffic
+ether proto 0x0806                     # Capture ARP packets only</code>
+        </div>
+
+        <h4 style="color: var(--cyan); margin: 1.5rem 0 0.75rem;">3. Nmap Scanning Syntax</h4>
+        <div class="code-box">
+          <code>nmap -sn 10.10.10.0/24                 # Host discovery ping sweep
+nmap -sS -p- -T4 10.10.10.30           # Fast SYN stealth scan all 65,535 ports
+nmap -sV -sC -O 10.10.10.30            # Service version, default scripts & OS detection
+nmap --script vuln -p 80 10.10.10.20   # Vulnerability scan web service</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 6: GLOSSARY SEARCH
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-glossary">
+    <div class="modal-container" style="max-width: 900px;">
+      <header class="modal-header">
+        <h3><span>📖</span> Comprehensive Networking & Security Glossary</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+          <input type="text" id="glossary-search-input" placeholder="Search acronyms or definitions..." style="flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); color: #fff; outline: none;">
+          <select id="glossary-category-select" style="background: var(--bg-input); border: 1px solid var(--border-color); padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); color: #fff;">
+            <option value="all">All Categories</option>
+            <option value="TCP">TCP</option>
+            <option value="IP">IP & Routing</option>
+            <option value="Ethernet">Ethernet & L2</option>
+            <option value="Attacks">Attacks & Malware</option>
+            <option value="Defense">Defense & IDS</option>
+            <option value="Wireshark">Wireshark</option>
+            <option value="Tools">Tools (Nmap, etc.)</option>
+          </select>
+        </div>
+        <div id="glossary-list" style="max-height: 500px; overflow-y: auto;">
+          <!-- Rendered via js/app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 7: FINAL EXAM SIMULATOR
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-exam">
+    <div class="modal-container" style="max-width: 800px;">
+      <header class="modal-header">
+        <h3><span>🎓</span> Final Certification Exam Simulator</h3>
+        <button class="modal-close-btn" aria-label="Close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.5rem;">
+          <span id="exam-progress-counter" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan);">Question 1 of 10</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Passing Score: 80%</span>
+        </div>
+
+        <div id="exam-question-box">
+          <!-- Rendered via js/app.js -->
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+          <button class="btn btn-secondary" id="exam-btn-prev">← Previous</button>
+          <button class="btn btn-primary" id="exam-btn-next">Next →</button>
+          <button class="btn btn-emerald" id="exam-btn-submit" style="display: none;">Submit & Grade Exam</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
